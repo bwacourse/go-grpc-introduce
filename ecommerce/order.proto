@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package ecommerce;
+
+import "ecommerce/product.proto"
+
+message Order {
+	int32 id = 1;
+	repeated ecommerce.Product products = 2;
+}
