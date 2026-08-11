@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package chat;
 
+option go_package = "grpc-protobuf/pb/chat";
+
 service ChatService {
     rpc SendMessage(stream ChatMessage) returns (ChatResponse); // Client -> Server (Streaming)
     rpc ReceiveMessage(ReceiveMessageRequest) returns (stream ChatResponse); // Server -> Client (Streaming)

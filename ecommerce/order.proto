@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package ecommerce;
 
-import "ecommerce/product.proto"
+option go_package = "grpc-protobuf/pb/ecommerce";
+
+import "ecommerce/product.proto";
 
 message Order {
 	int32 id = 1;

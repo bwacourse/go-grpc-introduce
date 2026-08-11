@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package ecommerce;
 
+option go_package = "grpc-protobuf/pb/ecommerce";
+
 message Product {
 	int64 id = 1;
 	string name = 2;

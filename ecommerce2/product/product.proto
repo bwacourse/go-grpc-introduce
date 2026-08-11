@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "grpc-protobuf/pb/ecommerce2/product";
+
 package ecommerce2.product;
 
 message Product {

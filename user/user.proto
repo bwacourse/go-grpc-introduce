@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package user;
 
+option go_package = "grpc-protobuf/pb/user";
+
 service UserService {
     rpc CreateUser(User) returns (CreateResponse); // Unary RPC
 }
