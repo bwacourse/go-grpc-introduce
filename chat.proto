@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+service ChatService {
+    rpc SendMessage(stream ChatMessage) returns (ChatResponse); // Client -> Server (Streaming)
+    rpc ReceiveMessage(ReceiveMessageRequest) returns (stream ChatResponse); // Server -> Client (Streaming)
+    rpc Chat(stream ChatMessage) returns (stream ChatMessage); // Bi Directional (Streaming)
+}
+
+message ChatMessage {
+    string user_id = 1;
+    string content = 2;
+}
+
+message ChatResponse {
+    string message = 1;
+}
+
+message ReceiveMessageRequest {
+    int64 user_id = 1;
+}
