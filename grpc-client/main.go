@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"grpc-protobuf/pb/user"
+	"grpc-protobuf/pb/chat"
 	"log"
+	"strconv"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -16,23 +17,32 @@ func main() {
 		log.Fatal("Failed to create client: ", err)
 	}
 
-	userClient := user.NewUserServiceClient(clientConn)
+	chatClient := chat.NewChatServiceClient(clientConn)
 
-	response, err := userClient.CreateUser(context.Background(), &user.User{
-		Id:      1,
-		Age:     23,
-		Balance: 130000,
-		Address: &user.Address{
-			Id:          123,
-			FullAddress: "Jl. Coding No. 123",
-			Province:    "Jawa Barat",
-			City:        "Jakarta",
-		},
-	})
+	stream, err := chatClient.SendMessage(context.Background())
 
 	if err != nil {
-		log.Fatal("Error calling user client: ", err)
+		log.Fatal("Failed to send message: ", err)
 	}
 
-	log.Println("Got message from server: ", response.Message)
+	// Looping sending messages (Client Streaming) 10x (Ex: user send message)
+	for i := 1; i <= 10; i++ {
+		err = stream.Send(&chat.ChatMessage{
+			UserId:  strconv.Itoa(i),
+			Content: "Hello from client",
+		})
+
+		if err != nil {
+			log.Fatal("Failed to send message: ", err)
+		}
+
+	}
+
+	res, err := stream.CloseAndRecv()
+
+	if err != nil {
+		log.Fatal("Failed to close and receive message: ", err)
+	}
+
+	log.Println("Connection is closed. Message: ", res.Message)
 }
