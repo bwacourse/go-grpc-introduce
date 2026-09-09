@@ -6,12 +6,12 @@ option go_package = "grpc-protobuf/pb/chat";
 
 service ChatService {
     rpc SendMessage(stream ChatMessage) returns (ChatResponse); // Client -> Server (Streaming)
-    rpc ReceiveMessage(ReceiveMessageRequest) returns (stream ChatResponse); // Server -> Client (Streaming)
+    rpc ReceiveMessage(ReceiveMessageRequest) returns (stream ChatMessage); // Server -> Client (Streaming)
     rpc Chat(stream ChatMessage) returns (stream ChatMessage); // Bi Directional (Streaming)
 }
 
 message ChatMessage {
-    string user_id = 1;
+    int64 user_id = 1;
     string content = 2;
 }
 

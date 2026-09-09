@@ -45,7 +45,7 @@ func (c chatService) SendMessage(stream grpc.ClientStreamingServer[chat.ChatMess
 			return status.Errorf(codes.Unknown, "Error receiving message: %v", err)
 		}
 
-		log.Printf("Receive Message %s, to %s", req.Content, req.UserId)
+		log.Printf("Receive Message %s, to %d", req.Content, req.UserId)
 	}
 
 	return stream.SendAndClose(&chat.ChatResponse{
@@ -53,9 +53,24 @@ func (c chatService) SendMessage(stream grpc.ClientStreamingServer[chat.ChatMess
 	})
 }
 
-// func (c chatService) ReceiveMessage(*chat.ReceiveMessageRequest, grpc.ServerStreamingServer[chat.ChatResponse]) error {
-// 	return status.Error(codes.Unimplemented, "method ReceiveMessage not implemented")
-// }
+func (c chatService) ReceiveMessage(request *chat.ReceiveMessageRequest, stream grpc.ServerStreamingServer[chat.ChatMessage]) error {
+	log.Printf("Got connection request from %d\n", request.UserId)
+
+	// Looping untuk mengirim message (Server Streaming) 10x
+	for i := 1; i <= 10; i++ {
+		err := stream.Send(&chat.ChatMessage{
+			UserId:  123,
+			Content: "Hi",
+		})
+
+		if err != nil {
+			return status.Errorf(codes.Unknown, "Error sending message to client: %v", err)
+		}
+	}
+
+	return nil
+}
+
 // func (c chatService) Chat(grpc.BidiStreamingServer[ChatMessage, ChatMessage]) error {
 // 	return status.Error(codes.Unimplemented, "method Chat not implemented")
 // }
