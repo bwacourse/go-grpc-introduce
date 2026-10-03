@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -71,9 +72,35 @@ func (c chatService) ReceiveMessage(request *chat.ReceiveMessageRequest, stream 
 	return nil
 }
 
-// func (c chatService) Chat(grpc.BidiStreamingServer[ChatMessage, ChatMessage]) error {
-// 	return status.Error(codes.Unimplemented, "method Chat not implemented")
-// }
+// Bidirectional Streaming RPC
+func (c chatService) Chat(stream grpc.BidiStreamingServer[chat.ChatMessage, chat.ChatMessage]) error {
+	for {
+		msg, err := stream.Recv()
+
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return status.Errorf(codes.Unknown, "error receiving message")
+		}
+
+		log.Printf("Got message form %d, content: %s", msg.UserId, msg.Content)
+
+		time.Sleep(2 * time.Second) // Waiting for 2 seconds
+
+		err = stream.Send(&chat.ChatMessage{
+			UserId:  50,
+			Content: "Reply from server",
+		})
+
+		if err != nil {
+			return status.Errorf(codes.Unknown, "error sending message to client: %v", err)
+		}
+	}
+
+	return nil
+}
 
 func main() {
 	lis, err := net.Listen("tcp", ":8081")
